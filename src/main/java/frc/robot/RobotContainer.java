@@ -18,12 +18,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.Robot;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -90,9 +92,9 @@ public class RobotContainer {
         ));
         // same thing
         OpControler.x().onTrue(intakeFuel.setIntake(2500));
-        OpControler.y().onTrue(intakeFuel.setIntake(0));
-        OpControler.b().onTrue(intakeFuel.setIntake(-2500));
-
+        OpControler.x().onFalse(intakeFuel.setIntake(0));
+        OpControler.y().onTrue(intakeFuel.setIntake(-2500));
+        OpControler.y().onFalse(intakeFuel.setIntake(0));
         driverController.povUp().whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
@@ -112,7 +114,11 @@ public class RobotContainer {
         driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        
+
     }
+
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
