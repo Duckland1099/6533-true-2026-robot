@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -31,6 +32,7 @@ import frc.robot.commands.AlignMT2;
 import frc.robot.commands.AlignLR;
 import frc.robot.commands.AlignMT2Timeout;
 import frc.robot.subsystems.vision;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -57,16 +59,28 @@ public class RobotContainer {
 
 
     public final Intake intakeFuel = new Intake();
+    public final Intake indexFuel = new Intake();
+    public final Intake deployIntake = new Intake();
+    public final Shooter shoot = new Shooter();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-      //intakeout doesnt seem to have sp, will ts still work?
-      NamedCommands.registerCommand("intake", intakeFuel.setIntake(2500));
+      //intake
+      NamedCommands.registerCommand("intake", intakeFuel.setIntake(0));
       NamedCommands.registerCommand("intakeoff", intakeFuel.setIntake(0));
-      NamedCommands.registerCommand("intakeout", intakeFuel.setIntake(-2500));
-      
+      NamedCommands.registerCommand("intakeout", intakeFuel.setIntake(0));
+      NamedCommands.registerCommand("indexOn", indexFuel.setindexer(0));
+      NamedCommands.registerCommand("indexOff", indexFuel.setindexer(0));
+      NamedCommands.registerCommand("indexOut", indexFuel.setindexer(0));
+      NamedCommands.registerCommand("Deploy", indexFuel.Depoly(0));
+      NamedCommands.registerCommand("UnDeploy", indexFuel.Depoly(0));
+
+      //shooter
+
+
+
         autoChooser = AutoBuilder.buildAutoChooser("New Auto");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
@@ -99,11 +113,7 @@ public class RobotContainer {
         driverController.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
         ));
-        // same thing
-        OpControler.x().onTrue(intakeFuel.setIntake(2500));
-        OpControler.x().onFalse(intakeFuel.setIntake(0));
-        OpControler.y().onTrue(intakeFuel.setIntake(-2500));
-        OpControler.y().onFalse(intakeFuel.setIntake(0));
+    
         driverController.povUp().whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
@@ -111,6 +121,15 @@ public class RobotContainer {
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
 
+        
+
+        OpControler.x().onTrue(Commands.parallel(intakeFuel.setIntake(2500),indexFuel.setindexer(2500)));
+        OpControler.x().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
+        OpControler.y().onTrue(Commands.parallel(intakeFuel.setIntake(-2500),indexFuel.setindexer(-2500)));
+        OpControler.y().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
+        OpControler.a().onTrue(deployIntake.Depoly(0));
+        OpControler.a().onFalse(deployIntake.Depoly(0));
+        
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

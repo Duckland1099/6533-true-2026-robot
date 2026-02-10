@@ -51,8 +51,7 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
 
 
-           m_shoot1 = new SparkMax(4, MotorType.kBrushless);
-        
+        m_shoot1 = new SparkMax(4, MotorType.kBrushless);
         m_shoot1Controller = m_shoot1.getClosedLoopController();
         m_shoot1Encoder = m_shoot1.getEncoder();
         shoot1Config = new SparkMaxConfig();
@@ -95,7 +94,7 @@ public class Shooter extends SubsystemBase {
     
   } 
      
-      public Command setTract(double sp) {
+      public Command shoot(double sp) {
         return this.run(() -> m_shoot1Controller.setSetpoint(sp, ControlType.kVelocity));
       }
   

@@ -33,6 +33,18 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "UnDeploy",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
       "name": "intake",
       "waypointRelativePos": 1,
       "endWaypointRelativePos": null,

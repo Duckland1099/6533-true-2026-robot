@@ -78,13 +78,30 @@ public class Intake extends SubsystemBase {
 
       }
 
+     
+  
+
+  
+     public double getIntake() {
+    return m_intake3Encoder.getPosition();
+  }
+
+  public void Intakepos(double pos) {
+    m_intake3Controller.setReference(pos, ControlType.kPosition, ClosedLoopSlot.kSlot0);  
+  }
+ public void ResetIntake() {
+    m_intake3Encoder.setPosition(0);
+  }
+
+  
+
       public Command setIntake(double sp) {
      
         return this.run(() ->   m_intake1.setVelocity(sp));
       }
       
-      public Command setTract(double sp) {
-        return this.run(() -> m_intake3Controller.setSetpoint(sp, ControlType.kVelocity));
+      public Command Depoly(double sp) {
+        return this.run(() -> m_intake3Encoder.setPosition(sp));
 
       }
       public Command setindexer(double sp) {
