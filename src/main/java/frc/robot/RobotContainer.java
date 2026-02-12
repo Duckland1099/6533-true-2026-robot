@@ -23,16 +23,16 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.Robot;
-import frc.robot.commands.AlignTA;
-import frc.robot.commands.AlignMT2;
-import frc.robot.commands.AlignLR;
-import frc.robot.commands.AlignMT2Timeout;
-import frc.robot.subsystems.vision;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drive.TunerConstants;
+import frc.robot.lib.util.logging.Loggable;
+import frc.robot.lib.util.logging.Logger;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -52,7 +52,6 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController OpControler = new CommandXboxController(1);
 
-   public static final vision vision = new vision();
     
     public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -89,6 +88,8 @@ public class RobotContainer {
         // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();
     }
+
+   
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,

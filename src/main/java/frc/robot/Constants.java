@@ -1,9 +1,10 @@
 package frc.robot;
 
-import frc.robot.generated.TunerConstants;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import frc.robot.subsystems.drive.TunerConstants;
 public class Constants {
         
 
