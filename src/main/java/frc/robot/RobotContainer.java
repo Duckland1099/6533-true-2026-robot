@@ -61,6 +61,7 @@ public class RobotContainer {
     public final Intake indexFuel = new Intake();
     public final Intake deployIntake = new Intake();
     public final Shooter shoot = new Shooter();
+    public final Shooter warmShooter = new Shooter();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -73,8 +74,10 @@ public class RobotContainer {
       NamedCommands.registerCommand("indexOn", indexFuel.setindexer(0));
       NamedCommands.registerCommand("indexOff", indexFuel.setindexer(0));
       NamedCommands.registerCommand("indexOut", indexFuel.setindexer(0));
-      NamedCommands.registerCommand("Deploy", indexFuel.Depoly(0));
-      NamedCommands.registerCommand("UnDeploy", indexFuel.Depoly(0));
+      NamedCommands.registerCommand("Deploy", deployIntake.Deploy(0));
+      NamedCommands.registerCommand("UnDeploy", deployIntake.Deploy(0));
+      NamedCommands.registerCommand("Shoot", shoot.shoot(0));
+      NamedCommands.registerCommand("WarmShoot", shoot.shoot(0));
 
       //shooter
 
@@ -128,10 +131,12 @@ public class RobotContainer {
         OpControler.x().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
         OpControler.y().onTrue(Commands.parallel(intakeFuel.setIntake(-2500),indexFuel.setindexer(-2500)));
         OpControler.y().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
-        OpControler.a().onTrue(deployIntake.Depoly(0));
-        OpControler.a().onFalse(deployIntake.Depoly(0));
-        
-
+        OpControler.a().onTrue(deployIntake.Deploy(0));
+        OpControler.a().onFalse(deployIntake.Deploy(0));
+        OpControler.leftBumper().onTrue(shoot.shoot(0));
+        OpControler.leftBumper().onFalse(shoot.shoot(0));
+        OpControler.rightBumper().onFalse(warmShooter.shoot(0));
+        OpControler.rightBumper().onTrue(warmShooter.shoot(0));
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
