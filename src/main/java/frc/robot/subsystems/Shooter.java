@@ -89,8 +89,18 @@ public class Shooter extends SubsystemBase {
        m_shoot3 = new TalonFX(7);
        m_shoot3Config = new TalonFXConfiguration();
        m_shoot3Config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0;
-       var request = new VelocityVoltage(0).withSlot(0);
-       m_shoot3.setControl(request.withVelocity(0).withFeedForward(0));
+     //  var request = new VelocityVoltage(0).withSlot(0);
+     //  m_shoot3.setControl(request.withVelocity(0).withFeedForward(0));
+
+            m_shoot3Config.CurrentLimits.StatorCurrentLimit = 60.0;
+        m_shoot3Config.CurrentLimits.StatorCurrentLimitEnable = true;
+       m_shoot3Config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+
+        m_shoot3Config.Slot0.kP = 0.0;
+        m_shoot3Config.Slot0.kI = 0.0;
+        m_shoot3Config.Slot0.kD = 0.0;
+        m_shoot3Config.Slot0.kV = 0.0;
     
   } 
      
@@ -98,12 +108,24 @@ public class Shooter extends SubsystemBase {
         return this.run(() -> m_shoot1Controller.setSetpoint(sp, ControlType.kVelocity));
       }
   
-      
+      public Command shooterwheel(double sp) {
+
+       return this.run(() -> m_shoot3.set(sp));
 
 
+}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 }
+
+
+
+
+      
+   
+
+  
+   

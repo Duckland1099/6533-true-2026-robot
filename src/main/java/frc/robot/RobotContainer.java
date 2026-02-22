@@ -61,6 +61,7 @@ public class RobotContainer {
     public final Intake indexFuel = new Intake();
     public final Intake deployIntake = new Intake();
     public final Shooter shoot = new Shooter();
+    public final Shooter shootwheel = new Shooter();
     public final Shooter warmShooter = new Shooter();
 
     /* Path follower */
@@ -68,18 +69,34 @@ public class RobotContainer {
 
     public RobotContainer() {
       //intake
-      NamedCommands.registerCommand("intake", intakeFuel.setIntake(0));
-      NamedCommands.registerCommand("intakeoff", intakeFuel.setIntake(0));
-      NamedCommands.registerCommand("intakeout", intakeFuel.setIntake(0));
-      NamedCommands.registerCommand("indexOn", indexFuel.setindexer(0));
-      NamedCommands.registerCommand("indexOff", indexFuel.setindexer(0));
-      NamedCommands.registerCommand("indexOut", indexFuel.setindexer(0));
       NamedCommands.registerCommand("Deploy", deployIntake.Deploy(0));
       NamedCommands.registerCommand("UnDeploy", deployIntake.Deploy(0));
-      NamedCommands.registerCommand("Shoot", shoot.shoot(0));
-      NamedCommands.registerCommand("WarmShoot", shoot.shoot(0));
 
-      //shooter
+      
+   NamedCommands.registerCommand("intake-and-index", Commands.parallel(
+    intakeFuel.setIntake(2500),
+    indexFuel.setindexer(1500)
+));
+ NamedCommands.registerCommand("intake-and-index off", Commands.parallel(
+    intakeFuel.setIntake(0),
+    indexFuel.setindexer(0)
+));
+   NamedCommands.registerCommand("intake-and-index", Commands.parallel(
+    intakeFuel.setIntake(2500),
+    indexFuel.setindexer(1500)
+));
+ NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
+    intakeFuel.setIntake(-2500),
+    indexFuel.setindexer(-1500)
+));
+//shooter
+ NamedCommands.registerCommand("shoot", Commands.parallel(
+    indexFuel.setindexer(-1500),
+    shoot.shoot(3500),
+    shoot.shooterwheel(0)
+));
+
+    NamedCommands.registerCommand("warmshooter", shoot.shoot(0));  
 
 
 
@@ -127,15 +144,15 @@ public class RobotContainer {
 
         
 
-        OpControler.x().onTrue(Commands.parallel(intakeFuel.setIntake(2500),indexFuel.setindexer(2500)));
+        OpControler.x().onTrue(Commands.parallel(intakeFuel.setIntake(2500),indexFuel.setindexer(1500)));
         OpControler.x().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
-        OpControler.y().onTrue(Commands.parallel(intakeFuel.setIntake(-2500),indexFuel.setindexer(-2500)));
+        OpControler.y().onTrue(Commands.parallel(intakeFuel.setIntake(-2500),indexFuel.setindexer(-1500)));
         OpControler.y().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
         OpControler.a().onTrue(deployIntake.Deploy(0));
         OpControler.a().onFalse(deployIntake.Deploy(0));
-        OpControler.leftBumper().onTrue(shoot.shoot(0));
-        OpControler.leftBumper().onFalse(shoot.shoot(0));
-        OpControler.rightBumper().onFalse(warmShooter.shoot(0));
+        OpControler.x().onTrue(Commands.parallel(shoot.shoot(3500),indexFuel.setindexer(1500),shoot.shooterwheel(0)));
+        OpControler.x().onTrue(Commands.parallel(shoot.shoot(0),indexFuel.setindexer(0),shoot.shooterwheel(0)));
+        OpControler.rightBumper().onFalse(warmShooter.shoot(2000));
         OpControler.rightBumper().onTrue(warmShooter.shoot(0));
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
