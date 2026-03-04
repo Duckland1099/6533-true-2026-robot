@@ -25,14 +25,11 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Intake;
 import frc.robot.Robot;
-import frc.robot.subsystems.vision.Vision;
+
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.TunerConstants;
-import frc.robot.lib.util.logging.Loggable;
-import frc.robot.lib.util.logging.Logger;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
+
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -47,7 +44,7 @@ public class RobotContainer {
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController OpControler = new CommandXboxController(1);
@@ -55,48 +52,37 @@ public class RobotContainer {
     
     public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-
-
-    public final Intake intakeFuel = new Intake();
-    public final Intake indexFuel = new Intake();
-    public final Intake deployIntake = new Intake();
-    public final Shooter shoot = new Shooter();
-    public final Shooter shootwheel = new Shooter();
-    public final Shooter warmShooter = new Shooter();
+public final Intake intake = new Intake();
+public final Shooter shooter = new Shooter();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
       //intake
-      NamedCommands.registerCommand("Deploy", deployIntake.Deploy(0));
-      NamedCommands.registerCommand("UnDeploy", deployIntake.Deploy(0));
-
+    NamedCommands.registerCommand("intake-and-index", Commands.parallel(
+    intake.setIntake(2500),
+    intake.setindexer(1500)
+));
       
-   NamedCommands.registerCommand("intake-and-index", Commands.parallel(
-    intakeFuel.setIntake(2500),
-    indexFuel.setindexer(1500)
-));
+
  NamedCommands.registerCommand("intake-and-index off", Commands.parallel(
-    intakeFuel.setIntake(0),
-    indexFuel.setindexer(0)
+    intake.setIntake(0),
+    intake.setindexer(0)
 ));
-   NamedCommands.registerCommand("intake-and-index", Commands.parallel(
-    intakeFuel.setIntake(2500),
-    indexFuel.setindexer(1500)
+NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
+    intake.setIntake(-2500),
+    intake.setindexer(-1500)
 ));
- NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
-    intakeFuel.setIntake(-2500),
-    indexFuel.setindexer(-1500)
-));
+
 //shooter
  NamedCommands.registerCommand("shoot", Commands.parallel(
-    indexFuel.setindexer(-1500),
-    shoot.shoot(3500),
-    shoot.shooterwheel(0)
+    intake.setindexer(1500),
+    shooter.shoot(3500),
+    shooter.shooterwheel(0)
 ));
 
-    NamedCommands.registerCommand("warmshooter", shoot.shoot(0));  
+    NamedCommands.registerCommand("warmshooter", shooter.shoot(0));  
 
 
 
@@ -142,18 +128,58 @@ public class RobotContainer {
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
 
-        
+        OpControler.x().onTrue(
+Commands.parallel(
+        intake.setIntake(2500),
+        intake.setindexer(1500)
+    )
+);
 
-        OpControler.x().onTrue(Commands.parallel(intakeFuel.setIntake(2500),indexFuel.setindexer(1500)));
-        OpControler.x().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
-        OpControler.y().onTrue(Commands.parallel(intakeFuel.setIntake(-2500),indexFuel.setindexer(-1500)));
-        OpControler.y().onFalse(Commands.parallel(intakeFuel.setIntake(0),indexFuel.setindexer(0)));
-        OpControler.a().onTrue(deployIntake.Deploy(0));
-        OpControler.a().onFalse(deployIntake.Deploy(0));
-        OpControler.x().onTrue(Commands.parallel(shoot.shoot(3500),indexFuel.setindexer(1500),shoot.shooterwheel(0)));
-        OpControler.x().onTrue(Commands.parallel(shoot.shoot(0),indexFuel.setindexer(0),shoot.shooterwheel(0)));
-        OpControler.rightBumper().onFalse(warmShooter.shoot(2000));
-        OpControler.rightBumper().onTrue(warmShooter.shoot(0));
+OpControler.x().onFalse(
+    Commands.parallel(
+        intake.setIntake(0),
+        intake.setindexer(0)
+    )
+);
+
+OpControler.y().onTrue(
+    Commands.parallel(
+        intake.setIntake(-2500),
+        intake.setindexer(-1500)
+    )
+);
+
+OpControler.y().onFalse(
+    Commands.parallel(
+        intake.setIntake(0),
+        intake.setindexer(0)
+    )
+);
+
+OpControler.a().onTrue(
+    intake.Deploy(1)   // example deploy position
+);
+
+OpControler.a().onFalse(
+    intake.Deploy(0)   // retract position
+);
+
+OpControler.rightBumper().onTrue(
+    Commands.parallel(
+        shooter.shoot(3500),
+        intake.setindexer(1500),
+        shooter.shooterwheel(0)
+    )
+);
+
+OpControler.rightBumper().onFalse(
+    Commands.parallel(
+        shooter.shoot(0),
+        intake.setindexer(0),
+        shooter.shooterwheel(0)
+    )
+);
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -164,7 +190,7 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+       
 
         
 

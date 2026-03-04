@@ -20,14 +20,13 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import com.revrobotics.RelativeEncoder;
-import com.thethriftybot.devices.ThriftyNova;
-import com.thethriftybot.devices.ThriftyNova.EncoderType;
+
 
 public class Intake extends SubsystemBase {
   public boolean x;
-  //private ThriftyNova m_intake1;
-  //private ThriftyNova m_intake2; 
+
   private final SparkMax m_intake1;
   private final RelativeEncoder m_intake1Encoder;
   private final SparkClosedLoopController m_intake1Controller;
@@ -46,7 +45,7 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {
         
-        m_intake1 = new SparkMax(1, MotorType.kBrushless); //intake
+        m_intake1 = new SparkMax(8, MotorType.kBrushless); //intake
         m_intake1Controller = m_intake1.getClosedLoopController();
         m_intake1Encoder = m_intake1.getEncoder();
         intake1Config = new SparkMaxConfig();
@@ -59,7 +58,7 @@ public class Intake extends SubsystemBase {
         .p(0.00001)
         .i(0)
         .d(0)
-        .outputRange(-0, 0);
+        .outputRange(-1, 1);
         m_intake1.configure(intake1Config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         m_intake2 = new SparkMax(2, MotorType.kBrushless); //intake
@@ -157,7 +156,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    toggIntake();
+    //toggIntake();
     SmartDashboard.putNumber("Intake Velocity", IntakeVel());
     SmartDashboard.putNumber("Indexer", indexVel());
     SmartDashboard.putNumber("Intake Pos", IntakePos());

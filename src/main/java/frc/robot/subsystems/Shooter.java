@@ -57,12 +57,12 @@ public class Shooter extends SubsystemBase {
         shoot1Config = new SparkMaxConfig();
         shoot1Config.encoder.velocityConversionFactor(1);
 
-        shoot1Config.closedLoop.velocityFF(.000185); //ff 0.000185
+        shoot1Config.closedLoop.velocityFF(0.00016199999663513154); //ff 0.000185
         shoot1Config.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed loop
         // slot, as it will default to slot 0.
-        .p(0)
+        .p(0.00009999999747378752)
         .i(0)
         .d(0)
         .outputRange(-0, 0);
@@ -110,14 +110,19 @@ public class Shooter extends SubsystemBase {
   
       public Command shooterwheel(double sp) {
 
-       return this.run(() -> m_shoot3.set(sp));
+       return this.run(() -> m_shoot3.set(sp)); }
 
-
+public double ShooterVel() {
+        double ShootVel = m_shoot1Encoder.getVelocity();
+        return ShootVel;
 }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+ 
+ SmartDashboard.putNumber("Shooter Velocity", ShooterVel());
+ 
   }
 }
 
