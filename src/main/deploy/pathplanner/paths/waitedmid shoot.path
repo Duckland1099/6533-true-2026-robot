@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3088018979833935,
-        "y": 2.318908659549229
+        "x": 3.342,
+        "y": 4.03
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.2805943027313875,
-        "y": 2.0721945777921125
+        "x": 3.5954673217274067,
+        "y": 3.9927075378784873
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.37275207591933646,
-        "y": 0.6619928825622776
+        "x": 3.342,
+        "y": 4.03
       },
       "prevControl": {
-        "x": 1.5991175522340448,
-        "y": 0.8410225473676274
+        "x": 3.0582717833753943,
+        "y": 4.059460249579726
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,28 +30,27 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.6,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
-      "name": "UnDeploy",
+      "name": "open",
       "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "intake",
-      "waypointRelativePos": 1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "intake"
+          "name": "open"
         }
       }
     }
@@ -66,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 0.8124835710436442
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.05
+    "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

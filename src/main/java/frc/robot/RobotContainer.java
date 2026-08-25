@@ -27,13 +27,18 @@ import frc.robot.subsystems.Intake;
 import frc.robot.Robot;
 
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shootwheel;
+import frc.robot.subsystems.procam;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.TunerConstants;
-
-
+import frc.robot.subsystems.Index;
+import frc.robot.subsystems.Shootergate;
+import frc.robot.AlignRight;
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+   
+   
+    private double MaxSpeed = 9 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxAngularRate = RotationsPerSecond.of(0.85).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -54,6 +59,10 @@ public class RobotContainer {
 
 public final Intake intake = new Intake();
 public final Shooter shooter = new Shooter();
+public final Index index = new Index();
+public final Shootwheel shootwheel = new Shootwheel();
+public final Shootergate openclose = new Shootergate();
+ private final procam visionCam = new procam();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -61,29 +70,52 @@ public final Shooter shooter = new Shooter();
     public RobotContainer() {
       //intake
     NamedCommands.registerCommand("intake-and-index", Commands.parallel(
-    intake.setIntake(2500),
-    intake.setindexer(1500)
+    intake.setIntake(3500),
+    index.setindex(0)
 ));
       
 
  NamedCommands.registerCommand("intake-and-index off", Commands.parallel(
     intake.setIntake(0),
-    intake.setindexer(0)
+    index.setindex(0)
 ));
 NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
-    intake.setIntake(-2500),
-    intake.setindexer(-1500)
+    intake.setIntake(-3500),
+    index.setindex(250)
 ));
 
 //shooter
  NamedCommands.registerCommand("shoot", Commands.parallel(
-    intake.setindexer(1500),
-    shooter.shoot(3500),
-    shooter.shooterwheel(0)
-));
+    index.setindex(0),
+    shooter.shoot(4500),
+    shootwheel.shooterwheel(0)
+    
 
+)); 
+ NamedCommands.registerCommand("stopshoot", Commands.parallel(
+    index.setindex(0),
+    shooter.shoot(0),
+    shootwheel.shooterwheel(0)
+    
+
+)); 
+ NamedCommands.registerCommand("open", Commands.parallel(
+    index.setindex(-250),
+    openclose.openclose(3))
+    
+
+); 
+ NamedCommands.registerCommand("close", Commands.parallel(
+    index.setindex(0),
+    openclose.openclose(0))
+    
+
+); 
+    NamedCommands.registerCommand("Align", new AlignRight(drivetrain, visionCam)); // should work if the bind on the driver works
+    NamedCommands.registerCommand("close", openclose.openclose(0));
     NamedCommands.registerCommand("warmshooter", shooter.shoot(0));  
-
+    NamedCommands.registerCommand("deploy", intake.Deploy(-25));
+    NamedCommands.registerCommand("undeploy", intake.Deploy(5));
 
 
         autoChooser = AutoBuilder.buildAutoChooser("New Auto");
@@ -128,57 +160,98 @@ NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
 
-        OpControler.x().onTrue(
+//driverController.y().onTrue(shooter.fireServotest());
+
+
+        driverController.rightBumper().onTrue(
 Commands.parallel(
-        intake.setIntake(2500),
-        intake.setindexer(1500)
+        intake.setIntake(3500),
+        index.setindex(0)
     )
 );
 
-OpControler.x().onFalse(
+driverController.rightBumper().onFalse(
     Commands.parallel(
         intake.setIntake(0),
-        intake.setindexer(0)
+        index.setindex(0)
     )
 );
 
-OpControler.y().onTrue(
-    Commands.parallel(
-        intake.setIntake(-2500),
-        intake.setindexer(-1500)
-    )
-);
-
-OpControler.y().onFalse(
-    Commands.parallel(
-        intake.setIntake(0),
-        intake.setindexer(0)
-    )
-);
 
 OpControler.a().onTrue(
-    intake.Deploy(1)   // example deploy position
+    intake.Deploy(-25)   // deploy position
 );
 
-OpControler.a().onFalse(
-    intake.Deploy(0)   // retract position
+OpControler.b().onTrue(
+    intake.Deploy(5)   // retract position
 );
+
+
+
 
 OpControler.rightBumper().onTrue(
     Commands.parallel(
-        shooter.shoot(3500),
-        intake.setindexer(1500),
-        shooter.shooterwheel(0)
+        shooter.shoot(4500),
+        index.setindex(0),
+        shootwheel.shooterwheel(0)
+       
     )
 );
 
 OpControler.rightBumper().onFalse(
     Commands.parallel(
         shooter.shoot(0),
-        intake.setindexer(0),
-        shooter.shooterwheel(0)
+        index.setindex(0),
+        shootwheel.shooterwheel(0),
+        openclose.openclose(0)
+
+
+        
     )
 );
+
+OpControler.leftBumper().onTrue(
+    Commands.parallel(
+         openclose.openclose(3),
+        index.setindex(-250),
+        shootwheel.shooterwheel(0)
+       
+    )
+);
+
+OpControler.leftBumper().onFalse(
+    Commands.parallel(
+         openclose.openclose(0),
+        index.setindex(0),
+        shootwheel.shooterwheel(0)
+       
+    )
+);
+//OpControler.x().onTrue(servos.fireServotest());
+
+OpControler.rightTrigger().onTrue(shooter.shoot(-250));
+OpControler.rightTrigger().onFalse(shooter.shoot(-0));
+
+
+
+OpControler.y().onTrue(
+    Commands.parallel(
+        shooter.shoot(-250),
+        openclose.openclose(0),
+         index.setindex(250)
+        
+    )
+);
+
+
+OpControler.y().onFalse(
+    Commands.parallel(
+        shooter.shoot(-0),
+        openclose.openclose(0),
+        index.setindex(0)
+    )
+);
+
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -188,7 +261,9 @@ OpControler.rightBumper().onFalse(
         driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        // Align with the left bumper press
+        driverController.leftBumper().whileTrue(new AlignRight(drivetrain, visionCam)); 
 
        
 

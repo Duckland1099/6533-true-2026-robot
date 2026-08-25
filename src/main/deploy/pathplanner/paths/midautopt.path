@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.460640569395019,
-        "y": 6.418161328588375
+        "x": 3.375,
+        "y": 4.03
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.976476868327403,
-        "y": 6.106144721233688
+        "x": 1.1043772241992889,
+        "y": 3.1904033214709377
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.256215895610914,
-        "y": 5.105539739027283
+        "x": 0.728,
+        "y": 5.977
       },
       "prevControl": {
-        "x": 3.1640944156947937,
-        "y": 4.873131406693729
+        "x": 2.3956749703440092,
+        "y": 6.310534994068802
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,33 +30,39 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.59,
-        "y": 4.0
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.25,
-      "maxWaypointRelativePos": 0.75,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "shoot",
-      "waypointRelativePos": 0.0,
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "stopshoot",
+      "waypointRelativePos": 0.1874515879163441,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "shoot"
+          "name": "stopshoot"
+        }
+      }
+    },
+    {
+      "name": "close ",
+      "waypointRelativePos": 0.30518977536793024,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "close"
         }
       }
     },
     {
       "name": "deploy",
-      "waypointRelativePos": 0.9233152594887826,
+      "waypointRelativePos": 0.31138652207590817,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -66,19 +72,19 @@
       }
     },
     {
-      "name": "fire",
+      "name": "intake-and-index",
       "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "fire"
+          "name": "intake-and-index"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.7,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -87,7 +93,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -29.054604099077203
+    "rotation": -178.4792303388562
   },
   "reversed": false,
   "folder": null,
@@ -95,5 +101,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

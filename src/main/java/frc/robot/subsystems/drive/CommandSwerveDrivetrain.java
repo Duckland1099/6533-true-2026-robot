@@ -19,10 +19,14 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -30,8 +34,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
-
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule;
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
@@ -40,9 +46,24 @@ import frc.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+    private double MaxSpeedLine = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxAngularRateLine = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+ private final SwerveRequest.RobotCentric driveline = new SwerveRequest.RobotCentric();
+
+private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
+    .withDeadband(MaxSpeedLine * 0.1)
+    .withRotationalDeadband(MaxAngularRateLine * 0.1)
+    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+
+private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
+    .withDeadband(MaxSpeedLine * 0.1)
+    .withRotationalDeadband(MaxAngularRateLine * 0.1)
+    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -50,6 +71,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    // AdvantageScope 3D pose publisher
+    private final StructPublisher<Pose3d> m_pose3dPublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("MyRobotPose3D", Pose3d.struct)
+            .publish();
 
 
     /** Swerve request to apply during robot-centric path following */
@@ -216,7 +242,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ),
                 new PPHolonomicDriveController(
                     // PID constants for translation
-                    new PIDConstants(10, 0, 0),
+                    new PIDConstants(10, 0, 0.1),
                     // PID constants for rotation
                     new PIDConstants(7, 0, 0)
                 ),
@@ -239,7 +265,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command applyRequest(Supplier<SwerveRequest> request) {
         return run(() -> this.setControl(request.get()));
     }
-
+public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    if (fieldRelative) {
+        setControl(
+            fieldCentricDrive
+                .withVelocityX(xSpeed * MaxSpeedLine)
+                .withVelocityY(ySpeed * MaxSpeedLine)
+                .withRotationalRate(rot * MaxAngularRateLine)
+        );
+    } else {
+        setControl(
+            robotCentricDrive
+                .withVelocityX(xSpeed * MaxSpeedLine)
+                .withVelocityY(ySpeed * MaxSpeedLine)
+                .withRotationalRate(rot * MaxAngularRateLine)
+        );
+    }
+}
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -283,9 +325,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-    
-  
-  
+
+        // Publish 3D pose for AdvantageScope
+        Pose2d pose2d = getState().Pose;
+        Pose3d pose3d = new Pose3d(
+            pose2d.getX(),
+            pose2d.getY(),
+            0.0,
+            new Rotation3d(0.0, 0.0, pose2d.getRotation().getRadians())
+        );
+        m_pose3dPublisher.set(pose3d);
     }
 
     private void startSimThread() {
@@ -347,4 +396,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
+
+    
 }

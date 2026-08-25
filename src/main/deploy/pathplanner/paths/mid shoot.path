@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.941143429024229,
-        "y": 4.0387230374873715
+        "x": 3.285996010169864,
+        "y": 4.025088080566507
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8467615658362995,
-        "y": 3.9650652431791222
+        "x": 3.374567022538553,
+        "y": 4.029620403321471
       },
       "prevControl": {
-        "x": 1.5003929675810008,
-        "y": 3.952166312424348
+        "x": 3.148440787504956,
+        "y": 3.9230046172974005
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,19 @@
       "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shoot",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "shoot"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -61,5 +73,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
