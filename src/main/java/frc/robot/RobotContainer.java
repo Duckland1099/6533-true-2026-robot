@@ -33,7 +33,7 @@ import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.TunerConstants;
 import frc.robot.subsystems.Index;
 import frc.robot.subsystems.Shootergate;
-import frc.robot.AlignRight;
+import frc.robot.Align;
 public class RobotContainer {
    
    
@@ -111,7 +111,7 @@ NamedCommands.registerCommand("intake-and-index out", Commands.parallel(
     
 
 ); 
-    NamedCommands.registerCommand("Align", new AlignRight(drivetrain, visionCam)); // should work if the bind on the driver works
+    NamedCommands.registerCommand("Align", new Align(drivetrain, visionCam)); // should work if the bind on the driver works
     NamedCommands.registerCommand("close", openclose.openclose(0));
     NamedCommands.registerCommand("warmshooter", shooter.shoot(0));  
     NamedCommands.registerCommand("deploy", intake.Deploy(-25));
@@ -263,7 +263,7 @@ OpControler.y().onFalse(
         // Reset the field-centric heading on left bumper press.
         //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         // Align with the left bumper press
-        driverController.leftBumper().whileTrue(new AlignRight(drivetrain, visionCam)); 
+        driverController.leftBumper().whileTrue(new Align(drivetrain, visionCam)); 
 
        
 

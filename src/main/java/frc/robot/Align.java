@@ -19,12 +19,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 
 
-public class AlignRight extends Command {
+public class Align extends Command {
   private procam m_Vision;
   private Timer dontSeeTagTimer, stopTimer;
   private CommandSwerveDrivetrain m_Swerve;
 private boolean isAligned = false;
-  public AlignRight(CommandSwerveDrivetrain swerve, procam limelight) {
+  public Align(CommandSwerveDrivetrain swerve, procam limelight) {
 
     this.m_Vision = limelight;
     this.m_Swerve = swerve;
@@ -115,7 +115,7 @@ public boolean isAligned() { return isAligned; }
  
   @Override
   public void end(boolean interrupted) {
-
+ 
     m_Swerve.drive(0,0,0,true);
     isAligned = false;
   }
@@ -128,4 +128,7 @@ public boolean isAligned() { return isAligned; }
 
   }
   
+  public void periodic() {
+ SmartDashboard.putBoolean("Aligned1", isAligned());
+  }
 }
